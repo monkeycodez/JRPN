@@ -1,0 +1,6 @@
+1 ,iden set
+iden println
+
+{ 
+	"hello world" println
+}!
