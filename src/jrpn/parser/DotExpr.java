@@ -4,12 +4,17 @@ import jrpn.syn.Token;
 
 public class DotExpr extends Expr {
 
-	Token	from;
 	String	val;
 
 	public DotExpr(Token f, String nxt) {
-		from = f;
+		super(f);
 		val = nxt;
+	}
+
+	@Override
+	public void compile(ExeBuilder comp, CChunkBuilder chunk) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

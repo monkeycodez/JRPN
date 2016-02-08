@@ -8,4 +8,8 @@ public class JRPNRef implements JRPNObj {
 		ref = o;
 	}
 
+	public String toString() {
+		return "REF: " + ref;
+	}
+
 }

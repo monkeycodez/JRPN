@@ -5,11 +5,11 @@ import java.nio.file.*;
 
 public class FileLexer implements LexReader {
 
-	public final String source;
+	public final String	source;
 
-	private byte[] file;
+	private byte[]		file;
 
-	private int idx = 0, lineno = 1;
+	private int			idx	= 0, lineno = 1;
 
 	public FileLexer(Path src) throws IOException {
 		source = src.toString();
@@ -30,9 +30,9 @@ public class FileLexer implements LexReader {
 
 	@Override
 	public char peek() {
-		if (idx + 1 == file.length)
+		if (idx == file.length)
 			return 0;
-		return (char) file[idx + 1];
+		return (char) file[idx];
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class FileLexer implements LexReader {
 
 	@Override
 	public int lineno() {
-		return 0;
+		return lineno;
 	}
 
 	@Override

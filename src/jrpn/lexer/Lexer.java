@@ -1,5 +1,6 @@
 package jrpn.lexer;
 
+import jrpn.parser.JRPNSyntaxError;
 import jrpn.syn.*;
 
 public class Lexer extends AbstractTokenProvider {
@@ -22,33 +23,35 @@ public class Lexer extends AbstractTokenProvider {
 
 	private Token _parse_str() {
 		do {
-			char c = rdr.next();
+			char c = rdr.peek();
 			if (c == '\"') {
+				rdr.next();
 				break;
 			} else if (c == '\\') {
 				c = rdr.next();
+				c = rdr.next();
 				switch (c) {
-					case '\n':
+					case 'n':
 						str.append('\n');
 						break;
-					case '\t':
+					case 't':
 						str.append('\t');
 						break;
 					default:
 						str.append(c);
 						break;
 				}
-				c = rdr.next();
 				continue;
 			}
 			str.append(c);
+			rdr.next();
 		} while (!rdr.is_done());
 		return _ntk(TType.STRING, str.toString());
 	}
 
 	private Token _parse_iden() {
 		do {
-			char c = rdr.next();
+			char c = rdr.peek();
 			if (Character.isWhitespace(c)) {
 				break;
 			} else if (TType.punct.containsKey(c)) {
@@ -57,6 +60,7 @@ public class Lexer extends AbstractTokenProvider {
 				// TODO throw error
 			}
 			str.append(c);
+			rdr.next();
 		} while (!rdr.is_done());
 		String val = str.toString();
 		if (TType.keywds.containsKey(val)) {
@@ -65,23 +69,23 @@ public class Lexer extends AbstractTokenProvider {
 		return _ntk(TType.IDEN, str.toString());
 	}
 
-	private Token _parse_num() {
+	private Token _parse_num() throws JRPNSyntaxError {
 		do {
-			char c = rdr.next();
-
+			char c = rdr.peek();
 			if (Character.isWhitespace(c)) {
 				break;
 			} else if (Character.isDigit(c) || c == '.') {
 				str.append(c);
+				rdr.next();
 				continue;
 			}
-			// TODO throw error
+			throw new JRPNSyntaxError("Unexpected character : " + c);
 		} while (!rdr.is_done());
 		return _ntk(TType.NUM, str.toString());
 	}
 
 	@Override
-	protected Token _next() {
+	protected Token _next() throws JRPNSyntaxError {
 		if (rdr.is_done())
 			return _ntk(TType.EOF);
 		char c = rdr.next();
@@ -101,7 +105,7 @@ public class Lexer extends AbstractTokenProvider {
 				return _parse_iden();
 			}
 		} else if (Character.isDigit(c)) {
-			_parse_num();
+			return _parse_num();
 		}
 		return _parse_iden();
 	}

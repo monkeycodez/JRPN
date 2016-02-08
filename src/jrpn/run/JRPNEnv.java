@@ -5,9 +5,9 @@ import java.util.*;
 
 import jrpn.lang.*;
 
-class JRPNEnv {
+public class JRPNEnv {
 
-	public static final int	MAX_STACK_SIZE	= 1 << 16,
+	public static final int	MAX_STACK_SIZE	= 1 << 5,
 			DEFAULT_CONST_SIZE = 1 << 16, MAX_CONST_SIZE = 1 << 20;
 
 	@SuppressWarnings("unchecked")
@@ -21,7 +21,7 @@ class JRPNEnv {
 	int						insp_stk[]		= new int[MAX_STACK_SIZE];
 	int						call_stk_p		= 0;
 
-	JRPNObj					const_vals[]	= new JRPNObj[DEFAULT_CONST_SIZE];
+	public JRPNObj			const_vals[]	= new JRPNObj[DEFAULT_CONST_SIZE];
 	int						const_end;
 
 	Writer					out, err;
@@ -50,12 +50,12 @@ class JRPNEnv {
 		return var_stack[0].get(name);
 	}
 
-	void set_global_var(String name, JRPNObj o) {
-		var_stack[0].put(name, new JRPNRef(o));
+	void set_global_var(String name, JRPNRef o) {
+		var_stack[0].put(name, o);
 	}
 
-	void set_local_var(String name, JRPNObj o) {
-		var_stack[var_idx].put(name, new JRPNRef(o));
+	void set_local_var(String name, JRPNRef o) {
+		var_stack[var_idx].put(name, o);
 	}
 
 	void push_val(JRPNObj o) {
@@ -80,9 +80,16 @@ class JRPNEnv {
 	}
 
 	void push_call_stack(JRPNCodeObj c, int ip) {
-		call_stack[call_stk_p] = c;
 		insp_stk[call_stk_p] = ip;
 		call_stk_p++;
+		call_stack[call_stk_p] = c;
+
+	}
+
+	int pop_call_stack() {
+		call_stack[call_stk_p] = null;
+		call_stk_p--;
+		return insp_stk[call_stk_p] + 1;
 	}
 
 	void flush_streams() throws IOException {

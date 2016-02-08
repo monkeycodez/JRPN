@@ -1,6 +1,9 @@
-1 ,iden set
+"hello world" ,iden set
 iden println
 
-{ 
-	"hello world" println
-}!
+"test 2"
+
+{
+	"test" println println
+} !
+
