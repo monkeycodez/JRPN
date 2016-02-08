@@ -7,10 +7,13 @@ import jrpn.run.*;
 
 public class ExeBuilder {
 
-	JRPNObj			const_vals[]	= new JRPNObj[20000];
-	int				last			= 1;
+	JRPNObj					const_vals[]	= new JRPNObj[20000];
+	int						last			= 1;
 
-	CChunkBuilder	base;
+	Map<String, Integer>	const_strs		= new HashMap<>();
+	Map<Double, Integer>	const_nums		= new HashMap<>();
+
+	CChunkBuilder			base;
 
 	public ExeBuilder(String src) {
 		base = new CChunkBuilder(src);
@@ -29,12 +32,22 @@ public class ExeBuilder {
 	List<to_write>	out	= new LinkedList<>();
 
 	public int register_const(double val) {
+		int i = const_nums.getOrDefault(val, -1);
+		if (i != -1) {
+			return i;
+		}
 		const_vals[last] = new JRPNNum(val);
+		const_nums.put(val, last);
 		return last++;
 	}
 
 	public int register_const(String s) {
+		Integer i = const_strs.get(s);
+		if (i != null) {
+			return i;
+		}
 		const_vals[last] = new JRPNString(s);
+		const_strs.put(s, last);
 		return last++;
 	}
 
@@ -53,7 +66,6 @@ public class ExeBuilder {
 		JRPNEnv e = new JRPNEnv();
 		JRPNCodeObj cd = base.create_code();
 		const_vals[0] = cd;
-		System.out.println(Arrays.toString(cd.code));
 		e.const_vals = const_vals;
 		return e;
 	}

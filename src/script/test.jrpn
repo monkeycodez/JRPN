@@ -1,9 +1,8 @@
-"hello world" ,iden set
-iden println
 
-"test 2"
+[
+	"foo" : "bar"
+	"baz" : { "hello world" println }
+] ,map set
+map println
 
-{
-	"test" println println
-} !
-
+map.baz !

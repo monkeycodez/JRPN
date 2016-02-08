@@ -18,8 +18,7 @@ public abstract class Expr {
 
 			@Override
 			public void compile(ExeBuilder comp, CChunkBuilder chunk) {
-				// TODO Auto-generated method stub
-
+				chunk.add_instr(JRPNVMCodes.PUSHFRAME, 0, t.lineno);
 			}
 
 		};
@@ -30,8 +29,7 @@ public abstract class Expr {
 
 			@Override
 			public void compile(ExeBuilder comp, CChunkBuilder chunk) {
-				// TODO Auto-generated method stub
-
+				chunk.add_instr(JRPNVMCodes.POPFRAME, 0, t.lineno);
 			}
 
 		};

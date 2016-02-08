@@ -2,7 +2,7 @@ package jrpn.parser;
 
 import java.util.*;
 
-import jrpn.lexer.TokenProvider;
+import jrpn.parser.lexer.TokenProvider;
 import jrpn.run.JRPNException;
 import jrpn.syn.*;
 
@@ -32,6 +32,11 @@ public class JRPNParser {
 		Token nxt = prov.next();
 		if (nxt.type == TType.IDEN) {
 			return new RefExpr(top, nxt);
+		} else if (nxt.type == TType.DOT) {
+			nxt = prov.next();
+			if (nxt.type == TType.IDEN) {
+				return new RefDotExpr(top, nxt);
+			}
 		}
 		throw new JRPNSyntaxError(nxt, "invalid REF statement");
 	}
@@ -64,7 +69,6 @@ public class JRPNParser {
 				while (true) {
 					n = prov.next();
 					if (n.type == TType.RPAREN) {
-						System.out.println("Breaking");
 						break;
 					} else if (n.type == TType.IDEN) {
 						args.add(n);
@@ -91,6 +95,31 @@ public class JRPNParser {
 		body.stmts.addFirst(Expr.push_frame_expr(top));
 		body.stmts.addLast(Expr.pop_frame_expr(prov.peek()));
 		return body;
+	}
+
+	private Expr parse_map(Token top) throws JRPNException {
+		List<Expr> k = new ArrayList<>(), v = new ArrayList<>();
+		while (true) {
+			Token t = prov.peek();
+			if (t.type == TType.RBRACK) {
+				prov.next();
+				break;
+			} else if (t.type == TType.EOF) {
+				throw new JRPNSyntaxError(t, "Unexpected EOF");
+			}
+			k.add(parse_statement());
+			t = prov.peek();
+			if (t.type != TType.COLON) {
+				throw new JRPNSyntaxError(t, "Unexpected statement");
+			}
+			prov.next();
+			v.add(parse_statement());
+		}
+		return new MapExpr(top, k.toArray(new Expr[1]), v.toArray(new Expr[1]));
+	}
+
+	public boolean is_done() throws JRPNException {
+		return prov.is_done();
 	}
 
 	public Expr parse_statement() throws JRPNException {
@@ -121,7 +150,8 @@ public class JRPNParser {
 			case LBRACE:
 				ex = parse_block(top);
 				break;
-			case LBRACK: // TODO impl map
+			case LBRACK:
+				ex = parse_map(top);
 				break;
 			case LPAREN: // TODO impl list
 				break;

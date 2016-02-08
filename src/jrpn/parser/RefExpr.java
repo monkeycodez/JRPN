@@ -5,11 +5,11 @@ import jrpn.syn.Token;
 
 public class RefExpr extends Expr {
 
-	String	ref;
+	Token	ref;
 
 	RefExpr(Token t, Token nx) {
 		super(t);
-		ref = nx.text;
+		ref = nx;
 	}
 
 	@Override
@@ -19,7 +19,7 @@ public class RefExpr extends Expr {
 
 	@Override
 	public void compile(ExeBuilder comp, CChunkBuilder chunk) {
-		int i = comp.register_const(ref);
+		int i = comp.register_const(ref.text);
 		chunk.add_instr(JRPNVMCodes.REF, i, from.lineno);
 	}
 

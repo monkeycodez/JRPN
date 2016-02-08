@@ -1,4 +1,4 @@
-package jrpn.lexer;
+package jrpn.parser.lexer;
 
 import java.util.LinkedList;
 

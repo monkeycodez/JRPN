@@ -27,6 +27,11 @@ public class JRPNExcecutor {
 						continue;
 					case EXIT:
 						break vm;
+					case DUP:
+						JRPNObj o = env.pop_val();
+						env.push_val(o);
+						env.push_val(o);
+						break;
 					case PUSHC:
 						env.push_valc(curr.arg[ip]);
 						ip++;
@@ -57,6 +62,7 @@ public class JRPNExcecutor {
 						continue;
 					case CALL:
 						JRPNCallable call = (JRPNCallable) env.pop_val();
+						System.out.println(call);
 						ip = call.call(env, ip);
 						curr = env.call_stack[env.call_stk_p];
 						ip++;
@@ -82,7 +88,40 @@ public class JRPNExcecutor {
 						ip = env.pop_call_stack();
 						curr = env.call_stack[env.call_stk_p];
 						break;
-
+					case PUSHFRAME:
+						env.push_var_frame();
+						ip++;
+						break;
+					case POPFRAME:
+						env.pop_var_frame();
+						ip++;
+						break;
+					case NEWMAP:
+						env.push_val(new JRPNMap());
+						ip++;
+						break;
+					case MAPSETM:
+						JRPNObj val = env.pop_val();
+						JRPNObj key = env.pop_val();
+						JRPNMap map = (JRPNMap) env.pop_val();
+						map.set(key, val);
+						env.push_val(map);
+						ip++;
+						break;
+					case MAPCGET:
+						key = env.const_vals[curr.arg[ip]];
+						map = (JRPNMap) env.pop_val();
+						val = map.get(key).ref;
+						env.push_val(val);
+						ip++;
+						break;
+					case MAPCGETR:
+						key = env.const_vals[curr.arg[ip]];
+						map = (JRPNMap) env.pop_val();
+						val = map.get(key);
+						env.push_val(val);
+						ip++;
+						break;
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();

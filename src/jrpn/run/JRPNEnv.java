@@ -67,7 +67,9 @@ public class JRPNEnv {
 	}
 
 	JRPNObj pop_val() {
-		return val_stack[--val_idx];
+		JRPNObj v = val_stack[--val_idx];
+		val_stack[val_idx + 1] = null;
+		return v;
 	}
 
 	int add_const(JRPNObj o) {
