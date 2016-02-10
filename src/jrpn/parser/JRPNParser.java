@@ -118,6 +118,35 @@ public class JRPNParser {
 		return new MapExpr(top, k.toArray(new Expr[1]), v.toArray(new Expr[1]));
 	}
 
+	private Expr parse_if(Token top) throws JRPNException {
+		Expr cond = parse_statement();
+		Expr bod = parse_statement();
+		if (prov.peek().type == TType.ELSE) {
+			prov.next();
+			return new IfElseExpr(top, cond, bod, parse_statement());
+		} else if (prov.peek().type == TType.ELIF) {
+			List<Expr> elifc = new LinkedList<>(), elifb = new LinkedList<>();
+			while (prov.peek().type == TType.ELIF) {
+				prov.next();
+				elifc.add(parse_statement());
+				elifb.add(parse_statement());
+			}
+			if (prov.peek().type == TType.ELSE) {
+				prov.next();
+				return new IfElIfElseExpr(top, cond, bod, elifc, elifb,
+						parse_statement());
+			}
+			return new IfElIfExpr(top, cond, bod, elifc, elifb);
+		}
+		return new IfExpr(top, cond, bod);
+	}
+
+	private Expr parse_while(Token top) throws JRPNException {
+		Expr cond = parse_statement();
+		Expr body = parse_statement();
+		return new WhileExpr(top, cond, body);
+	}
+
 	public boolean is_done() throws JRPNException {
 		return prov.is_done();
 	}
@@ -175,7 +204,25 @@ public class JRPNParser {
 				break;
 			case EPRINTLN:
 				ex = Expr.eprintln_expr(top);
-			default:
+				break;
+			case FALSE:
+				ex = Expr.false_expr(top);
+				break;
+			case TRUE:
+				ex = Expr.true_expr(top);
+				break;
+			case IF:
+				ex = parse_if(top);
+				break;
+			case WHILE:
+				ex = parse_while(top);
+				break;
+			case RPAREN:
+			case RBRACK:
+			case RBRACE:
+			case ELSE:
+			case ELIF:
+			case COLON:
 				break;
 
 		}

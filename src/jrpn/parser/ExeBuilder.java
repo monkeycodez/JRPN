@@ -17,6 +17,9 @@ public class ExeBuilder {
 
 	public ExeBuilder(String src) {
 		base = new CChunkBuilder(src);
+		const_vals[1] = JRPNBool.TRUE;
+		const_vals[2] = JRPNBool.FALSE;
+		last += 2;
 	}
 
 	static class to_write {

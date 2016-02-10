@@ -1,6 +1,9 @@
 package jrpn.run;
 
 import static jrpn.run.JRPNVMCodes.*;
+
+import java.util.Arrays;
+
 import jrpn.lang.*;
 
 public class JRPNExcecutor {
@@ -62,7 +65,7 @@ public class JRPNExcecutor {
 						continue;
 					case CALL:
 						JRPNCallable call = (JRPNCallable) env.pop_val();
-						System.out.println(call);
+						//						System.out.println(call);
 						ip = call.call(env, ip);
 						curr = env.call_stack[env.call_stk_p];
 						ip++;
@@ -86,6 +89,7 @@ public class JRPNExcecutor {
 						break;
 					case BREAK:
 						ip = env.pop_call_stack();
+						//						System.out.println(ip);
 						curr = env.call_stack[env.call_stk_p];
 						break;
 					case PUSHFRAME:
@@ -122,9 +126,24 @@ public class JRPNExcecutor {
 						env.push_val(val);
 						ip++;
 						break;
+					case JMP:
+						//						System.out.println(ip);
+						ip = curr.arg[ip];
+						//						System.out.println("JMP TO: " + ip);
+						break;
+					case JMPIFFN:
+						o = env.pop_val();
+						if (o == JRPNBool.FALSE) {
+							ip = curr.arg[ip];
+						} else {
+							ip++;
+						}
+						break;
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
+				System.out.println(Arrays.toString(env.call_stack));
+				System.out.println(curr.arg[ip] + " ln: " + curr.lineno[ip]);
 				break;
 			}
 		}

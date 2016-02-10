@@ -1,39 +1,41 @@
 package jrpn.lang;
 
-import java.util.*;
+import java.util.HashMap;
 
-public class JRPNMap implements JRPNObj {
+public class JRPNMap extends HashMap<JRPNObj, JRPNRef> implements JRPNObj {
 
-	private Map<JRPNObj, JRPNRef>	map;
+	/**
+	 * 
+	 */
+	private static final long	serialVersionUID	= 1L;
 
 	public JRPNMap() {
-		map = new HashMap<JRPNObj, JRPNRef>();
 	}
 
 	public JRPNRef get(JRPNObj val) {
-		JRPNRef r = map.get(val);
+		JRPNRef r = super.get(val);
 		if (r == null) {
 			r = new JRPNRef(null);
-			map.put(val, r);
+			super.put(val, r);
 		}
 		return r;
 	}
 
 	public void set(JRPNObj key, JRPNObj val) {
-		map.put(key, new JRPNRef(val));
+		super.put(key, new JRPNRef(val));
 	}
 
-	public boolean equals(Object o) {
-		return map.equals(o);
-	}
-
-	public int hashCode() {
-		return map.hashCode();
-	}
-
+	//	public boolean equals(Object o) {
+	//		return super.equals(o);
+	//	}
+	//
+	//	public int hashCode() {
+	//		return super.hashCode();
+	//	}
+	//
 	@Override
 	public String toString() {
-		return "JRPNMap: " + map.toString();
+		return "JRPNMap: " + super.toString();
 	}
 
 }

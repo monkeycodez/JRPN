@@ -1,16 +1,26 @@
 package jrpn.parser;
 
-import java.util.Arrays;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import jrpn.run.JRPNCodeObj;
+import jrpn.run.*;
 
 public class CChunkBuilder {
 
-	static final int	START_SZ	= 200;
+	private static final AtomicInteger	id_gen	= new AtomicInteger();
 
-	int					opcodes[], args[], linenos[];
-	int					idx			= 0;
-	String				source;
+	public static int get_uid() {
+		return id_gen.getAndIncrement();
+	}
+
+	private static final int	START_SZ	= 200;
+
+	int							opcodes[], args[], linenos[];
+	int							idx			= 0;
+	String						source;
+
+	Map<String, Integer>		marks		= new HashMap<>();
+	Map<String, List<Integer>>	to_mark		= new HashMap<>();
 
 	CChunkBuilder(String src) {
 		source = src;
@@ -29,12 +39,44 @@ public class CChunkBuilder {
 		}
 	}
 
+	public void set_mark(String name) {
+		marks.put(name, idx);
+		if (to_mark.get(name) == null)
+			return;
+		for (int i : to_mark.get(name)) {
+			args[i] = idx;
+		}
+	}
+
+	public void add_instr(int code, String mark, int lineno) {
+		_ensure_cap();
+		opcodes[idx] = code;
+		args[idx] = -1;
+		linenos[idx] = lineno;
+		Integer i = marks.get(mark);
+		if (i == null) {
+			List<Integer> tm = to_mark.get(mark);
+			if (tm == null) {
+				tm = new LinkedList<>();
+				to_mark.put(mark, tm);
+			}
+			tm.add(idx);
+		} else {
+			args[idx] = i;
+		}
+		idx++;
+	}
+
 	public void add_instr(int code, int arg, int lineno) {
 		_ensure_cap();
 		opcodes[idx] = code;
 		args[idx] = arg;
 		linenos[idx] = lineno;
 		idx++;
+	}
+
+	public void call_instr(int lineno) {
+		add_instr(JRPNVMCodes.CALL, -1, lineno);
 	}
 
 	public JRPNCodeObj create_code() {

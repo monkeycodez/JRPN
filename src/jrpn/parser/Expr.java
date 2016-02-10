@@ -68,6 +68,28 @@ public abstract class Expr {
 		};
 	}
 
+	public static Expr true_expr(Token t) {
+		return new Expr(t) {
+
+			@Override
+			public void compile(ExeBuilder comp, CChunkBuilder chunk) {
+				chunk.add_instr(JRPNVMCodes.PUSHC, 1, t.lineno);
+			}
+
+		};
+	}
+
+	public static Expr false_expr(Token t) {
+		return new Expr(t) {
+
+			@Override
+			public void compile(ExeBuilder comp, CChunkBuilder chunk) {
+				chunk.add_instr(JRPNVMCodes.PUSHC, 2, t.lineno);
+			}
+
+		};
+	}
+
 	public static Expr exit_expr(Token t) {
 		return new Expr(t) {
 

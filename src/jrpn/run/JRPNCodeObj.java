@@ -27,4 +27,9 @@ public class JRPNCodeObj implements JRPNObj, JRPNCallable {
 		return -1;
 	}
 
+	@Override
+	public String toString() {
+		return source + "@" + lineno[0];
+	}
+
 }
