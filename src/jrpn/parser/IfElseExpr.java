@@ -1,6 +1,6 @@
 package jrpn.parser;
 
-import jrpn.run.JRPNVMCodes;
+import jrpn.run.*;
 import jrpn.syn.Token;
 
 class IfElseExpr extends Expr {
@@ -17,16 +17,16 @@ class IfElseExpr extends Expr {
 	@Override
 	public void compile(ExeBuilder comp, CChunkBuilder chunk) {
 		cond.compile(comp, chunk);
-		chunk.add_instr(JRPNVMCodes.CALL, 0, from.lineno);
+		chunk.add_instr(JRPNVMCodes.CALL, 0, getFrom().lineno);
 		String end = "end-" + CChunkBuilder.get_uid();
 		String elss = "else-" + CChunkBuilder.get_uid();
-		chunk.add_instr(JRPNVMCodes.JMPIFFN, elss, from.lineno);
+		chunk.add_instr(JRPNVMCodes.JMPIFFN, elss, getFrom().lineno);
 		body.compile(comp, chunk);
-		chunk.call_instr(body.from.lineno);
-		chunk.add_instr(JRPNVMCodes.JMP, end, from.lineno);
+		chunk.call_instr(body.getFrom().lineno);
+		chunk.add_instr(JRPNVMCodes.JMP, end, getFrom().lineno);
 		chunk.set_mark(elss);
 		els.compile(comp, chunk);
-		chunk.call_instr(els.from.lineno);
+		chunk.call_instr(els.getFrom().lineno);
 		chunk.set_mark(end);
 	}
 

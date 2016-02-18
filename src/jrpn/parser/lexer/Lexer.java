@@ -1,6 +1,7 @@
 package jrpn.parser.lexer;
 
 import jrpn.parser.JRPNSyntaxError;
+import jrpn.run.JRPNException;
 import jrpn.syn.*;
 
 public class Lexer extends AbstractTokenProvider {
@@ -21,7 +22,7 @@ public class Lexer extends AbstractTokenProvider {
 
 	private StringBuilder	str;
 
-	private Token _parse_str() {
+	private Token _parse_str() throws JRPNException {
 		do {
 			char c = rdr.peek();
 			if (c == '\"') {
@@ -49,7 +50,7 @@ public class Lexer extends AbstractTokenProvider {
 		return _ntk(TType.STRING, str.toString());
 	}
 
-	private Token _parse_iden() {
+	private Token _parse_iden() throws JRPNException {
 		do {
 			char c = rdr.peek();
 			if (Character.isWhitespace(c)) {
@@ -69,7 +70,7 @@ public class Lexer extends AbstractTokenProvider {
 		return _ntk(TType.IDEN, str.toString());
 	}
 
-	private Token _parse_num() throws JRPNSyntaxError {
+	private Token _parse_num() throws JRPNException {
 		do {
 			char c = rdr.peek();
 			if (Character.isWhitespace(c)) {
@@ -85,7 +86,7 @@ public class Lexer extends AbstractTokenProvider {
 	}
 
 	@Override
-	protected Token _next() throws JRPNSyntaxError {
+	protected Token _next() throws JRPNException {
 		if (rdr.is_done())
 			return _ntk(TType.EOF);
 		char c = rdr.next();

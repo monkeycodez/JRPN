@@ -1,6 +1,6 @@
 package jrpn.parser;
 
-import jrpn.run.JRPNVMCodes;
+import jrpn.run.*;
 import jrpn.syn.Token;
 
 public class NumberExpr extends Expr {
@@ -15,7 +15,7 @@ public class NumberExpr extends Expr {
 	@Override
 	public void compile(ExeBuilder comp, CChunkBuilder chunk) {
 		int i = comp.register_const(val);
-		chunk.add_instr(JRPNVMCodes.PUSHC, i, from.lineno);
+		chunk.add_instr(JRPNVMCodes.PUSHC, i, getFrom().lineno);
 	}
 
 }

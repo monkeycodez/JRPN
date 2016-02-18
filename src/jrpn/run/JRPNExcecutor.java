@@ -8,7 +8,20 @@ import jrpn.lang.*;
 
 public class JRPNExcecutor {
 
-	private JRPNEnv	env;
+	JRPNEnv	env;
+	JRPNMap	last;
+	int		ip	= 0;
+
+	JRPNExcecutor(JRPNEnv e) {
+		env = e;
+	}
+
+	public JRPNExcecutor() {
+	}
+
+	public void set_startup(JRPNCodeObj code) {
+		env.call_stack[0] = code;
+	}
 
 	public void set_env(JRPNEnv e) {
 		env = e;
@@ -19,9 +32,15 @@ public class JRPNExcecutor {
 	}
 
 	public void eval(JRPNCodeObj code) {
-		JRPNCodeObj curr = code;
-		env.call_stack[0] = code;
-		int ip = 0;
+		set_startup(code);
+		eval();
+	}
+
+	public void eval() {
+		JRPNCodeObj curr = env.call_stack[env.call_stk_p];
+		int arg = 0;
+		JRPNObj o = null;
+		JRPNCallable call = null;
 		vm: while (ip < curr.code.length) {
 			try {
 				switch (curr.code[ip]) {
@@ -31,12 +50,14 @@ public class JRPNExcecutor {
 					case EXIT:
 						break vm;
 					case DUP:
-						JRPNObj o = env.pop_val();
+						o = env.pop_val();
 						env.push_val(o);
 						env.push_val(o);
 						break;
 					case PUSHC:
-						env.push_valc(curr.arg[ip]);
+						arg = curr.arg[ip];
+						o = env.const_vals[arg];
+						env.push_val(o);
 						ip++;
 						continue;
 					case POP:
@@ -47,8 +68,18 @@ public class JRPNExcecutor {
 						String s =
 								((JRPNString) env.const_vals[curr.arg[ip]])
 										.toString();
-						JRPNObj n = env.get_var(s).ref;
-						env.push_val(n);
+						o = env.get_var(s).ref;
+						if (o instanceof JRPNCallable) {
+							call = (JRPNCallable) o;
+							if (call.autoexec()) {
+								ip = call.call(env, ip);
+								curr = env.call_stack[env.call_stk_p];
+							} else {
+								env.push_val(o);
+							}
+						} else {
+							env.push_val(o);
+						}
 						ip++;
 						continue;
 					case PRINT:
@@ -64,8 +95,7 @@ public class JRPNExcecutor {
 						ip++;
 						continue;
 					case CALL:
-						JRPNCallable call = (JRPNCallable) env.pop_val();
-						//						System.out.println(call);
+						call = (JRPNCallable) env.pop_val();
 						ip = call.call(env, ip);
 						curr = env.call_stack[env.call_stk_p];
 						ip++;
@@ -81,7 +111,7 @@ public class JRPNExcecutor {
 										.toString();
 						JRPNRef rf = env.get_var(name);
 						if (rf == null) {
-							rf = new JRPNRef(null);
+							rf = new JRPNRef(JRPNBool.FALSE);
 							env.set_local_var(name, rf);
 						}
 						env.push_val(rf);
@@ -89,11 +119,14 @@ public class JRPNExcecutor {
 						break;
 					case BREAK:
 						ip = env.pop_call_stack();
-						//						System.out.println(ip);
 						curr = env.call_stack[env.call_stk_p];
 						break;
 					case PUSHFRAME:
 						env.push_var_frame();
+						if (curr.nt && last != null) {
+							env.push_val(last);
+						}
+						last = null;
 						ip++;
 						break;
 					case POPFRAME:
@@ -116,6 +149,9 @@ public class JRPNExcecutor {
 						key = env.const_vals[curr.arg[ip]];
 						map = (JRPNMap) env.pop_val();
 						val = map.get(key).ref;
+						if (val instanceof JRPNCallable) {
+							last = map;
+						}
 						env.push_val(val);
 						ip++;
 						break;
@@ -127,9 +163,7 @@ public class JRPNExcecutor {
 						ip++;
 						break;
 					case JMP:
-						//						System.out.println(ip);
 						ip = curr.arg[ip];
-						//						System.out.println("JMP TO: " + ip);
 						break;
 					case JMPIFFN:
 						o = env.pop_val();
@@ -139,11 +173,16 @@ public class JRPNExcecutor {
 							ip++;
 						}
 						break;
+					case NEWLIST:
+
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				System.out.println(Arrays.toString(env.call_stack));
-				System.out.println(curr.arg[ip] + " ln: " + curr.lineno[ip]);
+				System.out.println(Arrays.toString(env.val_stack));
+				System.out.println("ip: " + ip + " instr: " + curr.code[ip]
+						+ " arg: " + curr.arg[ip]
+						+ " ln: " + curr.lineno[ip]);
 				break;
 			}
 		}

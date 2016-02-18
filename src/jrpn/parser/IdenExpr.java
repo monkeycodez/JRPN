@@ -1,6 +1,6 @@
 package jrpn.parser;
 
-import jrpn.run.JRPNVMCodes;
+import jrpn.run.*;
 import jrpn.syn.Token;
 
 public class IdenExpr extends Expr {
@@ -11,8 +11,8 @@ public class IdenExpr extends Expr {
 
 	@Override
 	public void compile(ExeBuilder comp, CChunkBuilder chunk) {
-		int i = comp.register_const(from.text);
-		chunk.add_instr(JRPNVMCodes.GETV, i, from.lineno);
+		int i = comp.register_const(getFrom().text);
+		chunk.add_instr(JRPNVMCodes.GETV, i, getFrom().lineno);
 	}
 
 }

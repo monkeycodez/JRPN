@@ -1,6 +1,6 @@
 package jrpn.parser;
 
-import jrpn.run.JRPNVMCodes;
+import jrpn.run.*;
 import jrpn.syn.Token;
 
 public class RefDotExpr extends RefExpr {
@@ -12,7 +12,7 @@ public class RefDotExpr extends RefExpr {
 	@Override
 	public void compile(ExeBuilder comp, CChunkBuilder chunk) {
 		int i = comp.register_const(ref.text);
-		chunk.add_instr(JRPNVMCodes.MAPCGETR, i, from.lineno);
+		chunk.add_instr(JRPNVMCodes.MAPCGETR, i, getFrom().lineno);
 	}
 
 }

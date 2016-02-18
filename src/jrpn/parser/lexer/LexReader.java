@@ -1,10 +1,12 @@
 package jrpn.parser.lexer;
 
+import jrpn.run.JRPNException;
+
 public interface LexReader {
 
-	public char next();
+	public char next() throws JRPNException;
 
-	public char peek();
+	public char peek() throws JRPNException;
 
 	public boolean is_done();
 

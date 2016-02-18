@@ -60,6 +60,7 @@ public class JRPNParser {
 		// First, grab args, args may be none, one, or (arg, arg ...)
 		Token n = prov.peek();
 		List<Token> args = new LinkedList<>();
+		boolean nthis = false;
 		switch (n.type) {
 			case IDEN:
 				args.add(prov.next());
@@ -80,6 +81,7 @@ public class JRPNParser {
 			default:
 				return null;
 		}
+
 		if (prov.peek().type != TType.LBRACE) {
 			throw new JRPNSyntaxError(n, "Function does not have a body");
 		}
@@ -94,6 +96,11 @@ public class JRPNParser {
 		}
 		body.stmts.addFirst(Expr.push_frame_expr(top));
 		body.stmts.addLast(Expr.pop_frame_expr(prov.peek()));
+		if (args.size() > 0) {
+			if (args.get(0).text.equals("this")) {
+				body.nthis = true;
+			}
+		}
 		return body;
 	}
 

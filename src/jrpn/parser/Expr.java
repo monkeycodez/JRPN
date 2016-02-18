@@ -1,14 +1,14 @@
 package jrpn.parser;
 
-import jrpn.run.JRPNVMCodes;
+import jrpn.run.*;
 import jrpn.syn.Token;
 
 public abstract class Expr {
 
-	protected Token	from;
+	private Token	from;
 
 	public Expr(Token from) {
-		this.from = from;
+		this.setFrom(from);
 	}
 
 	public abstract void compile(ExeBuilder comp, CChunkBuilder chunk);
@@ -99,6 +99,14 @@ public abstract class Expr {
 			}
 
 		};
+	}
+
+	public Token getFrom() {
+		return from;
+	}
+
+	public void setFrom(Token from) {
+		this.from = from;
 	}
 
 }

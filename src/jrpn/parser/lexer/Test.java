@@ -3,7 +3,7 @@ package jrpn.parser.lexer;
 import java.nio.file.Paths;
 
 import jrpn.parser.*;
-import jrpn.run.*;
+import jrpn.run.ExecDriver;
 
 public class Test {
 
@@ -23,20 +23,7 @@ public class Test {
 		// break;
 		// }
 		prov = new Lexer(new FileLexer(Paths.get("src/script/test.jrpn")));
-		p = new JRPNParser(prov);
-		e = null;
-		ExeBuilder bld = new ExeBuilder("src/script/test.jrpn");
-		while (!prov.is_done()) {
-			e = p.parse_statement();
-			bld.write_expr(e);
-		}
-		JRPNEnv env = bld.create_env();
-		JRPNExcecutor exe = new JRPNExcecutor();
-		exe.set_env(env);
-		// System.out.println(Arrays
-		// .toString(((JRPNCodeObj) env.const_vals[0]).code));
-		System.out.println("-------------------------");
-		exe.eval((JRPNCodeObj) env.const_vals[0]);
+		ExecDriver.exec(prov, null, true);
 
 	}
 

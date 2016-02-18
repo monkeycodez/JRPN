@@ -1,6 +1,6 @@
 package jrpn.parser;
 
-import jrpn.run.JRPNVMCodes;
+import jrpn.run.*;
 import jrpn.syn.Token;
 
 public class IfExpr extends Expr {
@@ -16,11 +16,11 @@ public class IfExpr extends Expr {
 	@Override
 	public void compile(ExeBuilder comp, CChunkBuilder chunk) {
 		cond.compile(comp, chunk);
-		chunk.add_instr(JRPNVMCodes.CALL, 0, from.lineno);
+		chunk.add_instr(JRPNVMCodes.CALL, 0, getFrom().lineno);
 		String end = "end-" + CChunkBuilder.get_uid();
-		chunk.add_instr(JRPNVMCodes.JMPIFFN, end, from.lineno);
+		chunk.add_instr(JRPNVMCodes.JMPIFFN, end, getFrom().lineno);
 		bod.compile(comp, chunk);
-		chunk.add_instr(JRPNVMCodes.CALL, 0, bod.from.lineno);
+		chunk.add_instr(JRPNVMCodes.CALL, 0, bod.getFrom().lineno);
 		chunk.set_mark(end);
 	}
 

@@ -8,11 +8,14 @@ import jrpn.lang.*;
 public class JRPNEnv {
 
 	public static final int	MAX_STACK_SIZE	= 1 << 5,
-			DEFAULT_CONST_SIZE = 1 << 16, MAX_CONST_SIZE = 1 << 20;
+											DEFAULT_CONST_SIZE = 1 << 16,
+											MAX_CONST_SIZE = 1 << 20;
 
 	@SuppressWarnings("unchecked")
-	Map<String, JRPNRef>[]	var_stack		= new Map[MAX_STACK_SIZE];
+	Map<String, JRPNRef>	var_stack[]		= new Map[MAX_STACK_SIZE];
 	int						var_idx			= 0;
+
+	Map<String, JRPNRef>	globals;
 
 	JRPNObj					val_stack[]		= new JRPNObj[MAX_STACK_SIZE];
 	int						val_idx			= 0;
@@ -22,13 +25,14 @@ public class JRPNEnv {
 	int						call_stk_p		= 0;
 
 	public JRPNObj			const_vals[]	= new JRPNObj[DEFAULT_CONST_SIZE];
-	int						const_end;
+	int						const_end		= 0;
 
 	Writer					out, err;
 	Reader					in;
 
 	{
 		var_stack[0] = new HashMap<>();
+		globals = var_stack[0];
 		out = new OutputStreamWriter(System.out);
 		err = new OutputStreamWriter(System.err);
 		in = new InputStreamReader(System.in);
@@ -43,16 +47,21 @@ public class JRPNEnv {
 	}
 
 	JRPNRef get_var(String name) {
-		return var_stack[var_idx].get(name);
+		JRPNRef r = var_stack[var_idx].get(name);
+		if (r == null) {
+			r = globals.get(name);
+		}
+		return r;
 	}
 
-	JRPNRef get_global_var(String name) {
-		return var_stack[0].get(name);
-	}
-
-	void set_global_var(String name, JRPNRef o) {
-		var_stack[0].put(name, o);
-	}
+	//
+	//	JRPNRef get_global_var(String name) {
+	//		return var_stack[0].get(name);
+	//	}
+	//
+	//	void set_global_var(String name, JRPNRef o) {
+	//		var_stack[0].put(name, o);
+	//	}
 
 	void set_local_var(String name, JRPNRef o) {
 		var_stack[var_idx].put(name, o);

@@ -8,6 +8,7 @@ import jrpn.syn.Token;
 public class BlockExpr extends Expr {
 
 	LinkedList<Expr>	stmts	= new LinkedList<Expr>();
+	boolean				nthis	= false;
 
 	public BlockExpr(Token t) {
 		super(t);
@@ -26,14 +27,17 @@ public class BlockExpr extends Expr {
 	@Override
 	public void compile(ExeBuilder comp, CChunkBuilder chunk) {
 		int id = comp.register_const(this);
-		chunk.add_instr(JRPNVMCodes.PUSHC, id, from.lineno);
+		chunk.add_instr(JRPNVMCodes.PUSHC, id, getFrom().lineno);
 	}
 
 	public void compile_children(ExeBuilder comp, CChunkBuilder chunk) {
+		if (nthis) {
+			chunk.set_this();
+		}
 		for (Expr e : stmts) {
 			e.compile(comp, chunk);
 		}
-		chunk.add_instr(JRPNVMCodes.BREAK, 0, from.lineno);
+		chunk.add_instr(JRPNVMCodes.BREAK, 0, getFrom().lineno);
 	}
 
 }

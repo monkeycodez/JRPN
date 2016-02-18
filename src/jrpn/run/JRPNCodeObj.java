@@ -4,14 +4,16 @@ import jrpn.lang.JRPNObj;
 
 public class JRPNCodeObj implements JRPNObj, JRPNCallable {
 
-	public final int	code[];
-	public final int	arg[];
-	public int			lineno[];
-	public String		source;
+	int		code[];
+	int		arg[];
+	int		lineno[];
+	String	source;
+	boolean	nt;
 
 	public JRPNCodeObj(int code[], int arg[]) {
 		this.code = code;
 		this.arg = arg;
+		nt = false;
 	}
 
 	public JRPNCodeObj(int code[], int arg[], int linenos[], String src) {
@@ -19,6 +21,20 @@ public class JRPNCodeObj implements JRPNObj, JRPNCallable {
 		this.arg = arg;
 		source = src;
 		lineno = linenos;
+		nt = false;
+	}
+
+	public JRPNCodeObj(int code[], int arg[], int linenos[], String src,
+			boolean nthis) {
+		this.code = code;
+		this.arg = arg;
+		source = src;
+		lineno = linenos;
+		nt = nthis;
+	}
+
+	JRPNCodeObj(String src) {
+		source = src;
 	}
 
 	@Override
@@ -30,6 +46,10 @@ public class JRPNCodeObj implements JRPNObj, JRPNCallable {
 	@Override
 	public String toString() {
 		return source + "@" + lineno[0];
+	}
+
+	public boolean needs_this() {
+		return nt;
 	}
 
 }
