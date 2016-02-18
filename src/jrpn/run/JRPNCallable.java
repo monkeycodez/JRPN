@@ -257,7 +257,7 @@ public interface JRPNCallable extends JRPNObj {
 											}
 										};
 
-	static final JRPNCallable	get		= new builtin() {
+	static final JRPNCallable	mget		= new builtin() {
 
 											@Override
 											public void _call(JRPNEnv env) {
@@ -269,11 +269,11 @@ public interface JRPNCallable extends JRPNObj {
 
 											@Override
 											public String name() {
-												return "||";
+												return "mget";
 											}
 										};
 
-	static final JRPNCallable	set		= new builtin() {
+	static final JRPNCallable	mgetr		= new builtin() {
 
 											@Override
 											public void _call(JRPNEnv env) {
@@ -281,13 +281,15 @@ public interface JRPNCallable extends JRPNObj {
 														(JRPNMap) env.pop_val();
 												JRPNRef r =
 														m.get(env.pop_val());
-												r.ref = env.pop_val();
+												env.push_val(r);
 											}
 
 											@Override
 											public String name() {
-												return "||";
+												return "mgetr";
 											}
 										};
+										
+										
 
 }

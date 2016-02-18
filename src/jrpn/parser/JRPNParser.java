@@ -28,7 +28,7 @@ public class JRPNParser {
 		return new IdenExpr(top);
 	}
 
-	private RefExpr parse_comma(Token top) throws JRPNException {
+	private Expr parse_comma(Token top) throws JRPNException {
 		Token nxt = prov.next();
 		if (nxt.type == TType.IDEN) {
 			return new RefExpr(top, nxt);
@@ -37,6 +37,9 @@ public class JRPNParser {
 			if (nxt.type == TType.IDEN) {
 				return new RefDotExpr(top, nxt);
 			}
+		}else if(nxt.type == TType.AT){
+			return RefExpr.getr_listidx(top, parse_statement());
+			
 		}
 		throw new JRPNSyntaxError(nxt, "invalid REF statement");
 	}
@@ -160,11 +163,11 @@ public class JRPNParser {
 	private Expr parse_list(Token top) throws JRPNException{
 		ListExpr e = new ListExpr(top);
 		
-		while(prov.peek().type == TType.RPAREN){
+		while(prov.peek().type != TType.RPAREN){
 			Expr ex = parse_statement();
 			e.items.add(ex);
 		}
-		
+		prov.next();
 		return e;
 	}
 

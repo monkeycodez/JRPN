@@ -8,6 +8,18 @@ elif {false}
 else
 	{ "elif-else" println }
 
+( "foo1" "foo2" ) ,lst set
+
+lst println
+
+lst@1 println
+
+"foo0" lst,@0 set
+
+lst@0 println 
+
+lst@{0}! println
+
 [
 	"foo" : { "foo" }!
 	"baz" : func (this) { 
@@ -17,8 +29,19 @@ else
 ] ,map set
 map println
 
+"foo 3" map,.foo set 
+
 map.baz !
 
 1 1 + println
+
+1 1 - println
+
+2 2 * println
+
+2 2 / println
+
+
+
 
 "end " println

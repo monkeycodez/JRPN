@@ -79,6 +79,8 @@ public class Lexer extends AbstractTokenProvider {
 				str.append(c);
 				rdr.next();
 				continue;
+			}else if(TType.punct.containsKey(c)){
+				break;
 			}
 			throw new JRPNSyntaxError("Unexpected character : " + c);
 		} while (!rdr.is_done());

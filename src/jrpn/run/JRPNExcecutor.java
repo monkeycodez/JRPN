@@ -41,6 +41,8 @@ public class JRPNExcecutor {
 		int arg = 0;
 		JRPNObj o = null;
 		JRPNCallable call = null;
+		JRPNList l = null;
+		int idx = 0;
 		vm: while (ip < curr.code.length) {
 			try {
 				switch (curr.code[ip]) {
@@ -174,6 +176,29 @@ public class JRPNExcecutor {
 						}
 						break;
 					case NEWLIST:
+						env.push_val(new JRPNList());
+						ip++;
+						break;
+					case LISTADDL:
+						o = env.pop_val();
+						l = (JRPNList) env.pop_val();
+						l.add(o);
+						env.push_val(l);
+						ip++;
+						break;
+					case LISTGET:
+						idx = (int)((JRPNNum) env.pop_val()).val;
+						l = (JRPNList) env.pop_val();
+						env.push_val(l.lst.get(idx).ref);
+						ip++;
+						break;
+					case LISTGETR:
+						idx = (int)((JRPNNum) env.pop_val()).val;
+						l = (JRPNList) env.pop_val();
+						env.push_val(l.lst.get(idx));
+						ip++;
+						break;
+						
 
 				}
 			} catch (Exception ex) {
