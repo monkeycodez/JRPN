@@ -67,6 +67,18 @@ public abstract class Expr {
 
 		};
 	}
+	
+	public static Expr itg_call_expr(Token t, Expr nxt) {
+		return new Expr(t) {
+
+			@Override
+			public void compile(ExeBuilder comp, CChunkBuilder chunk) {
+				nxt.compile(comp, chunk);
+				chunk.add_instr(JRPNVMCodes.CALL, 0, t.lineno);
+			}
+
+		};
+	}
 
 	public static Expr true_expr(Token t) {
 		return new Expr(t) {
@@ -96,6 +108,18 @@ public abstract class Expr {
 			@Override
 			public void compile(ExeBuilder comp, CChunkBuilder chunk) {
 				chunk.add_instr(JRPNVMCodes.EXIT, 0, t.lineno);
+			}
+
+		};
+	}
+	
+	public static Expr index_expr(Token t, Expr idx) {
+		return new Expr(t) {
+
+			@Override
+			public void compile(ExeBuilder comp, CChunkBuilder chunk) {
+				idx.compile(comp, chunk);
+				chunk.add_instr(JRPNVMCodes.LISTGET, 0, t.lineno);
 			}
 
 		};

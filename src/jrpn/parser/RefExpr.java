@@ -22,5 +22,17 @@ public class RefExpr extends Expr {
 		int i = comp.register_const(ref.text);
 		chunk.add_instr(JRPNVMCodes.REF, i, getFrom().lineno);
 	}
+	
+	public static Expr getr_listidx(Token from, Expr val){
+		return new Expr(from){
+
+			@Override
+			public void compile(ExeBuilder comp, CChunkBuilder chunk) {
+				val.compile(comp, chunk);
+				chunk.add_instr(JRPNVMCodes.LISTGETR, 0, from.lineno);
+			}
+			
+		};
+	}
 
 }

@@ -60,7 +60,6 @@ public class JRPNParser {
 		// First, grab args, args may be none, one, or (arg, arg ...)
 		Token n = prov.peek();
 		List<Token> args = new LinkedList<>();
-		boolean nthis = false;
 		switch (n.type) {
 			case IDEN:
 				args.add(prov.next());
@@ -157,12 +156,22 @@ public class JRPNParser {
 	public boolean is_done() throws JRPNException {
 		return prov.is_done();
 	}
+	
+	private Expr parse_list(Token top) throws JRPNException{
+		ListExpr e = new ListExpr(top);
+		
+		while(prov.peek().type == TType.RPAREN){
+			Expr ex = parse_statement();
+			e.items.add(ex);
+		}
+		
+		return e;
+	}
 
 	public Expr parse_statement() throws JRPNException {
 		Token top = prov.next();
 		Expr ex = null;
 		switch (top.type) {
-			case EXCL:
 			case CALL:
 				ex = Expr.call_expr(top);
 				break;
@@ -189,7 +198,8 @@ public class JRPNParser {
 			case LBRACK:
 				ex = parse_map(top);
 				break;
-			case LPAREN: // TODO impl list
+			case LPAREN: 
+				ex = parse_list(top);
 				break;
 			case NUM:
 				ex = new NumberExpr(top);
@@ -224,12 +234,16 @@ public class JRPNParser {
 			case WHILE:
 				ex = parse_while(top);
 				break;
+			case AT:
+				ex = Expr.index_expr(top, parse_statement());
+				break; 
 			case RPAREN:
 			case RBRACK:
 			case RBRACE:
 			case ELSE:
 			case ELIF:
 			case COLON:
+			case EXCL:
 				break;
 
 		}
@@ -237,7 +251,9 @@ public class JRPNParser {
 			throw new JRPNSyntaxError(prov.peek(), "Unexpected token "
 					+ top.type + " text: " + top.text + " at: ");
 		}
-		prev = ex;
+		if(prov.peek().type == TType.EXCL){
+			return Expr.itg_call_expr(prov.next(), ex);
+		}
 		return ex;
 	}
 

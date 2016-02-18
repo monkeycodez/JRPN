@@ -23,14 +23,17 @@ public final class JRPNVMCodes {
 														PUSHFRAME = 12,
 														POPFRAME = 13,
 														NEWMAP = 14,
-														MAPSETM = 15,
+														MAPSETM = 15,	// for use by MapExpr
 														MAPCGET = 16, //For use by dotexpr
 			MAPCGETR = 17, //For use by ,dotexpr
 			JMP = 18,
 			JMPIFFN = 19, //JMP if the top of the stack is FALSE
 			NEWLIST = 20, //
-			LISTADDL = 21;													//For use by listexpr only
-
+			LISTADDL = 21,													//For use by listexpr only
+			LISTGET = 22,
+			LISTGETR = 23;
+	
+	
 	public static final Map<String, JRPNRef>	deffunc	= new HashMap<>();
 
 	static {

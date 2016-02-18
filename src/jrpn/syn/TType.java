@@ -15,6 +15,7 @@ public enum TType {
 	COLON(':'),
 	EXCL('!'),
 	BSLASH('\\'),
+	AT('@'),
 	SET("set"),
 	FUNC("func"),
 	POP("pop"),

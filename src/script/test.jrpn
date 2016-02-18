@@ -9,7 +9,7 @@ else
 	{ "elif-else" println }
 
 [
-	"foo" : "bar"
+	"foo" : { "foo" }!
 	"baz" : func (this) { 
 		"hello world" println
 		this.foo println 
