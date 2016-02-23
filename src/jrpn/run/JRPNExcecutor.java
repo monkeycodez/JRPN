@@ -9,7 +9,6 @@ import jrpn.lang.*;
 public class JRPNExcecutor {
 
 	JRPNEnv	env;
-	JRPNMap	last;
 	int		ip	= 0;
 
 	JRPNExcecutor(JRPNEnv e) {
@@ -125,10 +124,10 @@ public class JRPNExcecutor {
 						break;
 					case PUSHFRAME:
 						env.push_var_frame();
-						if (curr.nt && last != null) {
-							env.push_val(last);
+						if (curr.nt && env.lastm != null) {
+							env.push_val(env.lastm);
 						}
-						last = null;
+						env.lastm = null;
 						ip++;
 						break;
 					case POPFRAME:
@@ -152,7 +151,7 @@ public class JRPNExcecutor {
 						map = (JRPNMap) env.pop_val();
 						val = map.get(key).ref;
 						if (val instanceof JRPNCallable) {
-							last = map;
+							env.lastm = map;
 						}
 						env.push_val(val);
 						ip++;
@@ -187,18 +186,17 @@ public class JRPNExcecutor {
 						ip++;
 						break;
 					case LISTGET:
-						idx = (int)((JRPNNum) env.pop_val()).val;
+						idx = (int) ((JRPNNum) env.pop_val()).val;
 						l = (JRPNList) env.pop_val();
 						env.push_val(l.lst.get(idx).ref);
 						ip++;
 						break;
 					case LISTGETR:
-						idx = (int)((JRPNNum) env.pop_val()).val;
+						idx = (int) ((JRPNNum) env.pop_val()).val;
 						l = (JRPNList) env.pop_val();
 						env.push_val(l.lst.get(idx));
 						ip++;
 						break;
-						
 
 				}
 			} catch (Exception ex) {

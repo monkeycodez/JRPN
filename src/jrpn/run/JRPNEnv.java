@@ -30,6 +30,8 @@ public class JRPNEnv {
 	Writer					out, err;
 	Reader					in;
 
+	JRPNMap					lastm;
+
 	{
 		var_stack[0] = new HashMap<>();
 		globals = var_stack[0];

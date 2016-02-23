@@ -257,13 +257,15 @@ public interface JRPNCallable extends JRPNObj {
 											}
 										};
 
-	static final JRPNCallable	mget		= new builtin() {
+	static final JRPNCallable	mget	= new builtin() {
 
 											@Override
 											public void _call(JRPNEnv env) {
-												env.push_val(((JRPNMap) env
-														.pop_val()).get(env
-														.pop_val()).ref);
+												JRPNMap m =
+														(JRPNMap) env.pop_val();
+												JRPNObj o = env.pop_val();
+												env.lastm = m;
+												env.push_val(m.get(o).ref);
 
 											}
 
@@ -273,7 +275,7 @@ public interface JRPNCallable extends JRPNObj {
 											}
 										};
 
-	static final JRPNCallable	mgetr		= new builtin() {
+	static final JRPNCallable	mgetr	= new builtin() {
 
 											@Override
 											public void _call(JRPNEnv env) {
@@ -289,7 +291,5 @@ public interface JRPNCallable extends JRPNObj {
 												return "mgetr";
 											}
 										};
-										
-										
 
 }

@@ -29,9 +29,9 @@ lst@{0}! println
 ] ,map set
 map println
 
-"foo 3" map,.foo set 
+"foo 3" "foo" map mgetr set 
 
-map.baz !
+"baz" map mget call
 
 1 1 + println
 
